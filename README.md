@@ -1,8 +1,11 @@
 A、开发原理介绍：   
 这是一个简单的cmdb、job项目，涉及到以下组件：  
 1、job:利用salt、Django 进行开发，job依赖salt-minion指向job对应的ip即可；  
+
 2、cmdb 基于blueking cmdb进行简单开发；  
-3、mysql 提供基础数据服务（初始脚本放置于mysql/init）；  
+
+3、mysql 提供基础数据服务（初始脚本放置于mysql/init）；
+
 4、ldap 用于账户认证(初始数据可放置于ldap目录)；   
 
 5、nginx用于文件服务器、服务转发和负载均衡；   
@@ -51,8 +54,11 @@ A、开发原理介绍：
 ```
 B、使用介绍  
 1.请自行配置本机host或者dns指定至对应主机  
+
 2.cmdb: cmdb.qk.com opadmin blueking  
+
 3.cmdb中填入主机，并在主机上执行curl -s http://job.qk.com/download/salt_install.sh|sudo bash  
+
 4.job: job.qk.com   opadmin blueking即可执行批量操作  
 
 
