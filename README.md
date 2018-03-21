@@ -1,4 +1,4 @@
-A、开发原理介绍： 
+A、开发原理介绍：   
 这是一个简单的cmdb、job项目，涉及到以下组件：  
 1、job:利用salt、Django 进行开发，job依赖salt-minion指向job对应的ip即可；  
 2、cmdb 基于blueking cmdb进行简单开发；  
