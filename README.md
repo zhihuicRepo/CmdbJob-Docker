@@ -46,9 +46,9 @@ A、开发原理介绍：
 └── redis提供cmdb和job之间的单点登录
 ```
 B、使用介绍  
-请自行配置本机host或者dns指定至对应主机  
-cmdb: cmdb.qk.com opadmin blueking  
-cmdb中填入主机，并在主机上执行curl -s http://job.qk.com/download/salt_install.sh|sudo bash  
-job: job.qk.com   opadmin blueking即可执行批量操作  
+1.请自行配置本机host或者dns指定至对应主机  
+2.cmdb: cmdb.qk.com opadmin blueking  
+3.cmdb中填入主机，并在主机上执行curl -s http://job.qk.com/download/salt_install.sh|sudo bash  
+4.job: job.qk.com   opadmin blueking即可执行批量操作  
 
 
