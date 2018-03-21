@@ -14,6 +14,7 @@ RUN apt-get update \
     && pip install python-ldap \
     && pip install django-auth-ldap \
     && pip install mysql-python \
+    && pip install redis \
     && apt-get install -y salt-master \
     && mkdir -p /srv/salt \
     && mkdir -p /job
