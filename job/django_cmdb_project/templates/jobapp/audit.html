@@ -1,0 +1,43 @@
+{% extends 'jobapp/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+    ActionAudit
+{% endblock %}
+
+{% block main_block%}
+   
+    
+    <div style="margin-top:15px;"><h6 style="color: rgb(0, 132, 228)">Submitted Jobs (Last {{last_days}} Days)</h6></div>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <td>ID</td>
+                    <td>JID</td>
+                    <td>USER</td>
+                    <td>TARGET</td>
+                    <td>FUN</td>
+                    <td>Arguments</td>
+                </tr>
+            </thead>
+            <tbody>
+
+            {% for item in action_info_list %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.jid }}</td>
+                    <td>{{ item.user }}</td>
+                    <td>{{ item.tgt }}</td>
+                    <td>{{ item.fun }}</td>
+                    <td>{{ item.arg }}</td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+
+
+{% endblock %}
+

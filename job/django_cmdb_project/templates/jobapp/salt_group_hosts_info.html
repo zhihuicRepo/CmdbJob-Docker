@@ -1,0 +1,680 @@
+{% extends 'jobapp/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+    HostsInfo
+{% endblock %}
+
+{% block extrahead_block %}
+   <script src="{% static 'codemirror-5.14.2/lib/codemirror.js' %}"></script>
+   <script src="{% static 'codemirror-5.14.2/mode/shell/shell.js' %}"></script>
+   <script src="{% static 'codemirror-5.14.2/mode/python/python.js' %}"></script>
+   <script src="{% static 'codemirror-5.14.2/addon/display/fullscreen.js' %}"></script>
+
+   <link rel="stylesheet" href="{% static 'codemirror-5.14.2/lib/codemirror.css' %}" />
+   <link rel="stylesheet" href="{% static 'codemirror-5.14.2/theme/erlang-dark.css' %}" />
+   <link rel="stylesheet" href="{% static 'codemirror-5.14.2/addon/display/fullscreen.css' %}" />
+{% endblock %}
+
+{% block main_block %}
+    
+	  <div style="margin-top:15px;">
+		<h6 style="color: rgb(0, 132, 228)"><strong>[ {{ datasource }} - {{ GroupName }} ]</strong></h6>
+    <button id="AllSelect" class="btn btn-default" type="button">全选</button>
+    <button id="RevSelect" class="btn btn-default" type="button">反选</button>
+    <button id="HostsSelect" class="btn btn-default" type="button" href="#job_execute" data-toggle="modal">确认选取</button>
+  
+    </div>
+
+     <div class="table-responsive">
+        <table class="table table-striped table-condensed table-border">
+            <thead>
+                <tr align="center">
+                    <td></td>
+                    <td>ID</td>
+                    <td>HOSTNAME</td>
+                    <td>SYSTEM(BKING)</td>
+                    <td>SYSTEM(SALT)</td>
+                    <td>IP(BKING)</td>
+                    <td>IP(SALT)</td>
+                    <td>STATUS(SALT PING)</td>
+                    <td>DETAIL</td>
+                </tr>
+            </thead>
+            <tbody id="id_running_jobs_table">
+            
+            {% for host in hosts %}
+                <tr align="center">
+                    {% if host.status == 1 %}
+                        <td><input name="target_host" value="{{host.HostName}}" type="checkbox"></td>
+                    {% else %}
+                        <td><input value="{{host.HostName}}" type="checkbox" disabled></td>
+                    {% endif %}
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ host.HostName }}</td>
+                    <td>{{ host.OSName }}</td>
+                    <td>{{ host.osname_salt }}</td>
+                    <td>{{ host.InnerIP }}</td>
+                    <td>{{ host.ip_salt }}</td>
+                    <td>
+                    	{% if host.status == 1 %}
+                    		<font color="green" data-toggle="tooltip" title="salt-minion is up"><strong>UP</strong></font>
+                    	{% else %}
+                    	    <font color="red" data-toggle="tooltip" title="salt-minion is down"><strong>DOWN</strong></font>
+                    	{% endif %}
+                    </td>
+                    <td>
+                        {% if host.status == 1 %}
+                    		<a class="btn btn-outline-success my-2 my-sm-0"  role="button" id="{{host.HostName}}" name="host_detail_btn" href="#host_detail_info" data-toggle="modal">Detail</a>
+                    	{% else %}
+                            <a class="btn btn-outline-success my-2 my-sm-0 disabled" href="#" role="button">Detail</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+           
+            </tbody>
+        </table>
+    </div>
+
+
+<!-- popup box start -->
+    <div class="modal fade" id="host_detail_info" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title" id="myModalLabel1">主机详情</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          </div>
+          <div class="modal-body" id="ShowHostInfoDiv">
+
+          </div>
+          <div class="modal-footer">
+          </div>
+        </div>
+      </div>
+   </div>
+<!-- popup box end   --> 
+
+
+<!-- popup box start -->
+    <div class="modal fade" id="job_execute" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog modal-lg">
+      
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h6 class="modal-title" id="myModalLabel2">作业执行</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          </div>
+
+
+
+          <div class="modal-body" id="job_exec_main_inter">
+    
+                  <ul class="nav nav-tabs nav-justified">
+                      <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#StateSls">state.sls</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#CmdRun">cmd.run</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab"  href="#UploadFile">uploadfile</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab"  href="#CmdScript">cmd.script</a>
+                      </li>
+                  </ul>
+               
+                  <div class="tab-content">
+
+                    <div id="StateSls" class="tab-pane fade show active" role="tabpanel">
+                       <form method="post" action="{% url 'jobapp:state_sls_job_execute' %}">
+                       {% csrf_token %}
+
+                        <table class="table table-striped table-condensed table-border" style="margin-top:15px;">
+                            <tr>
+                              <td>目标:</td>
+                              <td>
+                                  <textarea class="form-control" rows="3" name="show_target_hosts" readonly></textarea>
+                              </td>
+                            </tr>
+
+                            <tr>
+                                 <td>函数:</td>
+                                 <td>state.sls</td>
+                            </tr>
+                            <tr>
+                                 <td style="vertical-align:middle;">动作:</td>
+                                 <td>
+                                    <select name="state_sls_select" id="state_sls_select" class="custom-select">
+                                      <option value="noselect" selected>please select action!</option>
+                                      <option value="initsys">系统初始化</option>
+                                      <option value="install_jdk1760">JDK1.7.60安装</option>
+                                      <option value="install_jdk1779">JDK1.7.79安装</option>
+                                      <option value="install_jdk1874">JDK1.8.74安装</option>
+                                      <option value="install_jdk18131">JDK1.8.131安装</option>
+                                      <option value="install_tomcat7">Tomcat7安装</option>
+                                      <option value="install_tomcat8">Tomcat8安装</option>
+                                      <option value="install_nginx">Nginx安装</option>
+                                      <option value="install_zabbix">Zabbix安装</option>
+                                      <option value="install_redis">Redis安装</option>
+                                      <option value="upgrade_ssh">openssh升级</option>
+                                    </select>
+                                 </td>
+                            </tr>
+                            <tr>
+                              <td>测试:</td>
+                              <td>
+                                <input name="state_sls_is_test" value="test" type="checkbox" checked="checked" />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td colspan="2">
+                                <button type="submit" id="state_sls_btn" name="state_sls_btn" class="btn btn-primary btn-block">确认执行</button>
+                              </td>
+                            </tr>
+                        </table>
+                    </form>
+                    </div>
+                    
+
+                     
+                     <div id="CmdRun" class="tab-pane fade" role="tabpanel">
+                        <form method="post" action="{% url 'jobapp:cmd_run_job_execute' %}">
+                        {% csrf_token %}
+                        <table class="table table-striped table-condensed table-border" style="margin-top:15px;">
+                            <tr>
+                              <td>目标:</td>
+                              <td>
+                                  <textarea class="form-control" rows="3" name="show_target_hosts" readonly></textarea>
+                              </td>
+                            </tr>
+                            <tr>
+                                 <td>函数:</td>
+                                 <td>cmd.run</td>
+                            </tr>
+                            <tr>
+                                 <td style="vertical-align:middle;">命令:</td>
+                                 <td>
+                                     <textarea class="form-control" rows="3" name="cmd_run_str" id="cmd_run_str"></textarea>
+                                 </td>
+                            </tr>
+
+                            <tr>
+                              <td style="vertical-align: middle;">用户:</td>
+                              <td>
+                                <input id="cmdrun_users" name="cmd_run_exec_user" style="width: 200px;" />
+                              </td>
+                            </tr>
+                            
+                            <tr>
+                              <td colspan="2">
+                                <button id="cmd_run_btn" class="btn btn-primary btn-block">确认执行</button>
+                              </td>
+                            </tr>
+                        </table>
+                    </form>
+                    </div>
+
+                    <!--cmd.script-->
+                     <div id="CmdScript" class="tab-pane fade" role="tabpanel">
+                        <form method="post" action="{% url 'jobapp:cmd_script_job_execute' %}">
+                        {% csrf_token %}
+                        <table class="table table-striped table-condensed table-border" style="margin-top:15px;">
+                            <tr>
+                              <td>目标:</td>
+                              <td>
+                                  <textarea class="form-control" rows="3" name="show_target_hosts" readonly></textarea>
+                              </td>
+                            </tr>
+                            <tr>
+                                 <td>函数:</td>
+                                 <td>cmd.script</td>
+                            </tr>
+                            <tr></tr>
+                            <tr>
+                              <td style="vertical-align: middle;">用户:</td>
+                              <td>
+                                <input id="cmdscript_users" name="cmd_script_exec_user" style="width: 200px;" />
+                              </td>
+                            </tr>
+
+                            <!-- script tab  -->
+                            <tr>
+                              <td colspan="2">
+                              <ul class="nav nav-tabs nav-justified">
+                                <li class="nav-item">
+                                   <a class="nav-link active" data-toggle="tab" href="#CommonScript">常用脚本</a>
+                                </li>
+                                <li class="nav-item">
+                                  <a class="nav-link" data-toggle="tab" href="#TmpScript">临时脚本</a>
+                                </li>
+                              </ul>
+                              <div class="tab-content">
+                                <div id="CommonScript" class="tab-pane fade show active" role="tabpanel" align="center">
+                                  <table class="table table-striped table-condensed table-border" style="margin-top:15px;">
+
+                                  <tr>
+                                     <td style="vertical-align:middle;">脚本:</td>
+                                     <td>
+                                         <input id="cmd_script_name" name="cmd_script_name" class="script_name"  style="width:400px">
+                                         <input type="hidden" id="script_id" name="script_id">
+                                     </td>
+                                 </tr>
+
+                                 <tr>
+                                     <td style="vertical-align:middle;">参数:</td>
+                                     <td>
+                                         <input id="cmd_script_args" name="cmd_script_args" style="width:400px">
+                                     </td>
+                                 </tr>
+
+                                 <tr>
+                                   <td colspan="2">
+                                      <button id="cmd_common_script_btn" class="btn btn-primary btn-block" name="script_style" value="common_script">确认执行</button>
+                                   </td>
+                                 </tr>
+
+                                 </table>
+                                </div>
+                                <div id="TmpScript" class="tab-pane fade show" role="tabpanel">
+                                  <textarea id="editor" name="editor"></textarea>
+                                   <button id="cmd_tmp_script_btn" class="btn btn-primary btn-block" style="margin-top:10px;" name="script_style" value="tmp_script">确认执行</button>
+                                </div>
+                              </div>
+                            </td>
+                            </tr>
+                            <!-- script tab end -->
+                                                                                  
+                        </table>
+                    </form>
+                    </div>
+                    <!--end-->
+
+
+                     <div id="UploadFile" class="tab-pane fade" role="tabpanel">
+                        <form method="post" action="{% url 'jobapp:upload_file_job_execute' %}">
+                        {% csrf_token %}
+                        <table class="table table-striped table-condensed table-border" style="margin-top:15px;">
+                            <tr>
+                              <td>目标:</td>
+                              <td>
+                                  <textarea class="form-control" rows="3" name="show_target_hosts" readonly></textarea>
+                              </td>
+                            </tr>
+                            <tr>
+                                 <td style="vertical-align:middle;">源文件:</td>
+                                 <td>
+                                      <div class="row">
+                                      <div class="col-md-7">
+                                         <input id="source_file" name="source_file" style="width:350px">
+                                      </div>
+                                      <div class="col-md-5">
+                                      <a class="btn btn-outline-success my-2 my-sm-0" id="upload_file_to_master_btn" role="button" href="#upload_file_to_master_window" data-toggle="modal">上传</a>
+                                      <a class="btn btn-outline-success my-2 my-sm-0" id="delete_file_from_master_btn" role="button" href="#delete_file_from_master_window" data-toggle="modal">删除</a>
+                                      </div>
+                                      </div>
+                                      
+                                      <script type="text/javascript">
+                                          function load_files_list() {
+                                                  $("#source_file").kendoDropDownList({
+                                                  dataTextField: "FileName",
+                                                  dataValueField: "FileName",
+                                                  dataSource: {
+                                                      transport: {
+                                                          read: {
+                                                              dataType: "json",
+                                                              url: "/jobapp/user/files/show",
+                                                          }
+                                                      }
+                                                  }
+                                              });
+                                          }
+
+                                          function load_exec_user_list() {
+                                                 $(".exec_user").kendoDropDownList({
+                                                     dataTextField: "UserName",
+                                                     dataValueField: "UserName",
+                                                     dataSource: {
+                                                         transport: {
+                                                             read: {
+                                                                dataType: "json",
+                                                                url: "/jobapp/execuser/name/show"
+                                                             }
+                                                         }
+                                                     }
+                                                 })
+                                          }
+
+                                          function onClose(e) {
+                                            var id = $("#cmd_script_name").val()
+
+                                            if (id != "") {
+                                                $("#script_id").attr("value",id)
+                                                $.get("{% url 'jobapp:get_script_args' %}",{id:id},function(data){
+                                                    
+                                                     if (data.script_args == "" || data.script_args == null) {
+                                                       $("#cmd_script_args").attr("placeholder","该脚本无需参数！")
+                                                     } else {
+                                                       $("#cmd_script_args").attr("placeholder",data.script_args)
+                                                     }
+                                                     
+                                                })
+                                            } else {
+                                              $("#cmd_script_args").attr("placeholder","")
+                                            }
+
+                                          }
+
+                                          function load_script_list() {
+                                            $(".script_name").kendoDropDownList({
+                                              optionLabel: "please select script",
+                                              dataTextField: "script_name",
+                                              dataValueField: "id",
+                                              close: onClose,
+                                              dataSource: {
+                                                transport: {
+                                                  read: {
+                                                    dataType: "json",
+                                                    url: "{% url 'jobapp:custom_scripts_all' %}"
+                                                  }
+                                                }
+                                              }
+                                            })
+                                          }
+
+                                          $(document).ready(function() {
+                                              load_files_list()
+                                              //load_exec_user_list()
+                                              load_script_list()
+
+                                              var file_data = $("#source_file").data("kendoDropDownList")
+                                              $("#delete_file_from_master_btn").click(function(){
+                                                  var file_name = file_data.text()
+                                                  if (file_name == "Please Select File...") {
+                                                    $('#job_exec_tip_inter').html("<font color='red'><strong>请先选择需要删除的文件！</strong></font>")
+                                                    return false
+                                                  } else {
+                                                    $("#ShowInfoDiv").html("确认删除文件("+file_name+")吗?")
+                                                  }
+                                              })
+
+                                              $("#confirm_del_file_btn").click(function(){
+                                                  var file_name = file_data.text()
+                                                  $.get('/jobapp/del_file/',{file_name:file_name},function(data){
+                                                    $("#delete_file_from_master_window").modal('hide')
+                                                    load_files_list()
+                                                  })
+                                              })
+
+                                              $("#cmd_common_script_btn").click(function(){
+                                                   var id = $("#cmd_script_name").val()
+                                                   if (id == "" || id == null) {
+                                                       $('#job_exec_tip_inter').html("<font color='red'><strong>请选择脚本！</strong></font>")
+                                                       return false
+                                                   }
+                                                   
+                                                    cmdscript_select_user = $("#cmdscript_users").val()
+                                                    if (cmdscript_select_user == "") {
+                                                        $('#job_exec_tip_inter').html("<font color='red'><strong>请选择执行用户！</strong></font>")
+                                                        return false
+                                                    }
+
+                                              })
+
+                                              $('#job_execute').on('shown.bs.modal', function() {
+                                                   $(document).off('focusin.modal');
+                                              });
+
+
+
+                                          });
+                                      </script>
+
+                                      <script id="noDataTemplate" type="text/x-kendo-tmpl">
+                                            <div>
+                                                找不到这个用户，你想添加该用户吗 - '#: instance.filterInput.val() #' ?
+                                            </div>
+                                            <br />
+                                            <button class="k-button" onclick="addNew('#: instance.element[0].id #', '#: instance.filterInput.val() #')">add new user</button>
+                                      </script>
+
+                                 </td>
+                            </tr>
+                            <tr>
+                                 <td style="vertical-align:middle;">目标目录:</td>
+                                 <td>
+                                     <input class="form-control" type="text" id="dest_dir" name="dest_dir">
+                                 </td>
+                            </tr>
+                            <tr>
+                              <td colspan="2">
+                                <button id="upload_file_btn" class="btn btn-primary btn-block">确认执行</button>
+                              </td>
+                            </tr>
+                        </table>
+                    </form>
+                    </div>
+
+               </div>
+          </div>
+          
+
+          <div class="modal-header" id="job_exec_tip_inter">{{info}}</div>
+        </div>
+      </div>
+   </div>
+<!-- popup box end   --> 
+
+<!-- popup box start -->
+<div class="modal fade" id="delete_file_from_master_window" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title" id="myModalLabel1">DELETE FILE CONFIRM</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          </div>
+          <div class="modal-body" id="ShowInfoDiv">
+          </div>
+          <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary" id="confirm_del_file_btn">确认</button>
+          </div>
+        </div>
+      </div>
+   </div>
+<!-- popup box end   --> 
+
+
+
+<!-- popup box start -->
+    <div class="modal fade" id="upload_file_to_master_window" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title" id="myModalLabel1">UPLOAD FILE TO MASTER</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          </div>
+          <div class="modal-body">
+          <input name="files" id="files" type="file" />
+            <script>
+                function onSuccess(e) {
+                    load_files_list()
+                }
+
+                $(document).ready(function() {
+                    $("#files").kendoUpload({
+                        async: {
+                            saveUrl: "/jobapp/upload/",
+                            //removeUrl: "remove",
+                            autoUpload: true
+                        },
+                        success: onSuccess
+                    });
+                });
+            </script>
+          </div>
+          <div class="modal-footer">
+          </div>
+        </div>
+      </div>
+   </div>
+<!-- popup box end   --> 
+
+
+
+  <script type="text/javascript">
+
+     function init_code_editor(editor_id) {
+            var myTextarea = document.getElementById(editor_id);
+            var CodeMirrorEditor = CodeMirror.fromTextArea(myTextarea, {
+                mode: "text/javascript",
+                lineNumbers:true,
+                theme:"erlang-dark"
+            });
+
+            $(".CodeMirror-sizer").css("margin-left","36px");
+            $(".CodeMirror-gutter.CodeMirror-linenumbers").width("33px");
+            $(".CodeMirror-gutter-wrapper").css("left","-36px");
+
+            return CodeMirrorEditor
+      }
+
+    $(document).ready(function(){
+
+      CodeMirrorEditor = init_code_editor("editor")
+
+      $("#cmd_tmp_script_btn").click(function(){
+          script_code = CodeMirrorEditor.getValue().replace(/[\r\n]/g,"")
+          if (script_code == "") {
+              $('#job_exec_tip_inter').html("<font color='red'><strong>请在编辑框输入代码！</strong></font>")
+              return false
+          }
+
+           cmdscript_select_user = $("#cmdscript_users").val()
+           if (cmdscript_select_user == "") {
+              $('#job_exec_tip_inter').html("<font color='red'><strong>请选择执行用户！</strong></font>")
+              return false
+           }
+
+      })    
+
+      $('[name="host_detail_btn"]').click(function() {
+        var hostname = $(this).attr("id")
+        $.get('/jobapp/get_host_detail_info/',{hostname:hostname},function(data){
+          $('#ShowHostInfoDiv').html(data)
+        })
+      })
+
+
+      $('#AllSelect').click(function(){
+          $('input[name="target_host"]').each(function() {
+            $(this).prop("checked","checked");
+          });
+      })
+
+
+      $('#RevSelect').click(function(){
+          $('input[name="target_host"]').each(function() {
+              if ($(this).prop("checked")) {
+                  $(this).prop("checked",false);
+              }
+              else {
+                  $(this).prop("checked","checked")
+              }
+
+        });
+      })
+
+
+      $('#HostsSelect').click(function(){
+          var TargetHostsStr = ""
+
+          $('input[name="target_host"]').each(function(){
+            if ($(this).prop('checked')) {
+              CheckboxVal = $(this).val()
+              TargetHostsStr = TargetHostsStr + CheckboxVal + ","
+            }
+          })
+
+          
+          if (TargetHostsStr=="") {
+             $('#job_exec_main_inter').hide()
+             $('#job_exec_tip_inter').html("<font color='red'><strong>请选取执行目标！</strong></font>")
+
+          }
+          else {
+             TargetHostsStr = TargetHostsStr.substring(0,TargetHostsStr.length-1)
+             $('textarea[name="show_target_hosts"]').val(TargetHostsStr)
+             $('#job_exec_tip_inter').text("")
+             $('#job_exec_main_inter').show()
+          }
+      })
+
+      $('#state_sls_btn').click(function(){
+           action = $('#state_sls_select option:selected').val()
+           if (action == "noselect") {
+                $('#job_exec_tip_inter').html("<font color='red'><strong>请选取执行动作！</strong></font>")
+                return false
+           }
+      })
+
+      $("#upload_file_btn").click(function(){
+          source_file_obj = $("#source_file").data("kendoDropDownList")
+          FileName = source_file_obj.text()
+          dest_dir = $("#dest_dir").val()
+          if (FileName == "" || FileName == "Please Select File...") {
+              $('#job_exec_tip_inter').html("<font color='red'><strong>请先上传文件到Master,再选择其作为源文件,如已上传，请选择！</strong></font>")
+              return false
+          }
+          if (dest_dir == "") {
+             $('#job_exec_tip_inter').html("<font color='red'><strong> 请输入目标目录！</strong></font>")
+             return false
+          }
+      })
+
+
+      $("#cmd_run_btn").click(function(){
+           var cmd_run_str = $("#cmd_run_str").val().replace(/[\r\n]/g,"")
+           if (cmd_run_str == "") {
+              $('#job_exec_tip_inter').html("<font color='red'><strong>请输入执行命令！</strong></font>")
+              return false
+           }
+
+           var ret = /^.*rm|reboot|shutdown.*$/
+           if (ret.test(cmd_run_str)) {
+              $('#job_exec_tip_inter').html("<font color='red'><strong>含有禁用命令，不能执行！</strong></font>")
+              return false
+           }
+
+           var cmdrun_select_user = $("#cmdrun_users").val()
+           if (cmdrun_select_user == "") {
+              $('#job_exec_tip_inter').html("<font color='red'><strong>请选择执行用户！</strong></font>")
+              return false
+           }
+
+      })
+
+
+      $("input:radio[name='upfile_file_option']").click(function(){
+
+           var upload_file_option = $(this).attr("id")
+
+           if (upload_file_option == "upload_file_local") {
+               $("#file_path_style").html('<input type="file" class="form-control-file" id="source_path_local_input" name="source_path_local_input" aria-describedby="fileHelp">')
+           } else {
+               $("#file_path_style").html('<input class="form-control" type="url" id="source_path_url_input" name="source_path_url_input">')
+           }
+           
+      })
+
+    })
+  </script>
+
+  <style type="text/css">
+        .CodeMirror{border:1px solid black;font-size:22px;width:740px;height:450px}
+  </style>
+
+{% endblock %}

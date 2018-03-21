@@ -1,0 +1,161 @@
+{% extends 'jobapp/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+    JobExecuteResult
+{% endblock %}
+
+{% block main_block %}
+<div id="show"></div>
+
+<div class="table-responsive">
+	<table class="table table-striped table-condensed table-border">
+	    <tbody>
+		<tr>
+			<td id="jid" val="{{ jid }}">
+			[ JID: {{ jid }} ]
+			</td>
+            <td id="source_file_name" val="{{source_file_name}}"></td>
+            <td id="dest_file_path" val="{{dest_file_path}}"></td>
+		</tr>
+		</tbody>
+	</table>
+</div>
+
+<div>
+    			[ 
+			目标主机数: <span class="badge badge-pill badge-primary"> <font id="target_hosts_num" val="{{ target_hosts_num }}" data-toggle="tooltip" title="" data-original-title="
+所有执行job任务的主机.">{{target_hosts_num}}</font></span> , 
+			已返回主机数: <span class="badge badge-pill badge-primary"><font data-toggle="tooltip" title="" data-original-title="
+已返回数据的主机，包括成功和失败的." id="return_hosts_num">0</font></span> , 
+			未返回主机数: <span class="badge badge-pill badge-primary"><font data-toggle="tooltip" title="" data-original-title="
+未返回数据的主机，是正在运行的主机，如长时间未返回，minion可能未启动或和master断开."  id="no_return_hosts_num">{{target_hosts_num}}</font></span>
+			]
+</div>
+
+<div class="table-responsive" style="margin-top:15px;">
+	<table class="table table-striped table-condensed table-border">
+		<thead>
+			<tr>
+				<td>序号</td>
+				<td>主机名</td>
+				<td>源文件</td>
+				<td>目的路径</td>
+				<td>文件大小</td>
+				<td>状态</td>
+				<td>进度</td>
+			</tr>
+		</thead>
+		<tbody>
+		{% for host in target_hosts_list %}
+			<tr>
+				<td>{{ forloop.counter }}</td>
+				<td>{{ host }}</td>
+				<td>{{ source_file_name }}</td>
+				<td>{{ dest_file_path }}</td>
+				<td>
+					{% if source_file_size == 0 %}
+					小于1MB
+					{% else %}
+					{{ source_file_size }}MB
+					{% endif%}
+				</td>
+				<td id="check" val="{{ host }}"><img src="{% static 'images/loading1.gif'%}"></td>
+				<td val="{{ host }}_prog"></td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+</div>
+
+
+
+<script type="text/javascript">
+
+		function IntervalCheck(jid){
+
+			var jid = $("td#jid").attr("val")
+			var source_file_name = $("td#source_file_name").attr("val")
+			var dest_file_path = $("td#dest_file_path").attr("val")
+
+			var hosts = ""
+
+			$("td#check").each(function(){
+				host = $(this).attr("val")
+				hosts = hosts + host + ","
+
+			})
+
+           
+			if (hosts == "") {
+				clearInterval(IntChkObj)
+			} else {
+                hosts = hosts.substr(0,hosts.length-1)
+                // -----------------------------------------
+                $.post('/jobapp/get_upload_job_hosts_task_status/',{hosts:hosts,jid:jid},function(data,status){
+                	if (data != "") {
+                	    DataArray = eval(data)
+                	    for (i in DataArray) {
+                		   
+                		   host = DataArray[i]['host']
+                		   status = DataArray[i]['status']
+
+                		   if (status == 0) {
+                		   	  $('td[val="'+host+'"]').html("<font color='green'><strong>SUCCESS</strong></font>")
+                		   } else {
+                		   	  $('td[val="'+host+'"]').html("<font color='red'><strong>FAILURE</strong></font>")
+                		   }
+                		   $('td[val="'+host+'"]').removeAttr("id")
+                		  
+                	    }
+                        
+                        target_hosts_num = $("font#target_hosts_num").attr("val")
+                        target_hosts_num = new Number(target_hosts_num)
+                        no_return_hosts_num = 0
+                        $("td#check").each(function(){
+                        	no_return_hosts_num = no_return_hosts_num + 1
+                        })
+                        return_hosts_num = target_hosts_num - no_return_hosts_num
+
+                        $('#return_hosts_num').text(return_hosts_num)
+                        $('#no_return_hosts_num').text(no_return_hosts_num)
+
+
+                	}
+
+                },
+                "json"
+                );
+                // -----------------------------------------
+
+                // ------------------------------------------
+                $.post('/jobapp/get_upload_file_progress/',{hosts:hosts,jid:jid,source_file_name:source_file_name,dest_file_path:dest_file_path},function(data,status){
+                      if (data != "") {
+                      	 DataArray = eval(data)
+                      	 for (i in DataArray) {
+                      	   host = DataArray[i]['host']
+                		   prog = DataArray[i]['prog']
+                		   $('td[val="'+host+'_prog"]').html("<font color='green'><strong>"+prog+"%</strong></font>")
+                      	 }
+                      }
+                },
+                "json"
+                );
+                // ------------------------------------------
+
+
+			}
+		}
+
+    
+
+
+	$(document).ready(function(){
+    
+		IntChkObj=setInterval("IntervalCheck()",2000)
+
+	})
+
+</script>
+
+{% endblock %}

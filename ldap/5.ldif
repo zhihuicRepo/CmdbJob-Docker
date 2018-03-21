@@ -1,0 +1,11 @@
+dn: uid=opadmin,ou=People,dc=example,dc=org
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: account
+cn: opadmin
+gidNumber: 3003
+homeDirectory: /tmp/op/opa
+uid: opadmin
+uidNumber: 20098
+loginShell: /bin/bash
+userPassword:: Ymx1ZWtpbmc=

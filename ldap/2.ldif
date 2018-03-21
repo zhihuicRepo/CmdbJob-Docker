@@ -1,0 +1,4 @@
+dn: cn=rd,ou=Group,dc=example,dc=org
+objectClass: posixGroup
+cn: rd
+gidNumber: 3004

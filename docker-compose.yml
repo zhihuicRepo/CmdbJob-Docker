@@ -1,0 +1,100 @@
+version: '2'
+# 定义四个服务nginx,php,mysql,redis,ldap,job
+services:
+  nginx:
+    # 依赖php服务，意味着在启动nginx之前先启动php
+    image: nginx:1.12
+    depends_on:
+      - php
+      # nginx镜像的路径
+    volumes:
+      - ./nginx/www:/usr/share/nginx/html
+      - ./nginx/conf.d:/etc/nginx/conf.d
+        # nginx意外退出时自动重启
+    restart: always
+    privileged: true
+        # 映射80和443端口
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - frontend
+        # 容器名称
+    container_name: cmdb_job_nginx
+
+  php:
+    depends_on:
+      - mysql
+    build: ./php
+    networks:
+      - frontend
+      - backend     
+    privileged: true 
+    volumes:
+      - ./nginx/www:/var/www/html
+    restart: always
+    container_name: cmdb_job_php
+
+  # MySQL
+  mysql:
+    image: mysql:5.7.21
+    privileged: true
+    volumes:
+      - ./mysql/init:/docker-entrypoint-initdb.d/
+    environment:
+      MYSQL_ROOT_PASSWORD: openet12
+    networks:
+      - backend
+    restart: always
+    container_name: cmdb_job_mysql
+
+  ldap:
+    image: osixia/openldap
+    privileged: true
+    volumes:
+      - ./ldap:/container/service/slapd/assets/config/bootstrap/ldif/custom
+    environment:
+      - LDAP_READONLY_USER:"true"
+      - LDAP_TLS:"false"
+    command: ["--copy-service"]
+    ports:
+      - "389:389"
+    networks:
+      - backend
+      - frontend
+    restart: always
+    container_name: cmdb_job_ldap
+  redis:
+    image: redis:3.2.11
+    container_name: cmdb_job_redis
+    depends_on:
+      - php
+    networks:
+      - backend
+      - frontend
+  job:
+    depends_on:
+      - mysql
+      - php
+      - nginx
+      - redis
+      - ldap
+    build: ./job
+    networks:
+      - frontend
+      - backend     
+    privileged: true 
+    ports:
+      - "4505:4505"
+      - "4506:4506"
+      - "8000:8000"
+    environment:
+      - cmdb.qk.com:"nginx"
+      - job.qk.com:"nginx"
+    restart: always
+    container_name: cmdb_job_app
+networks:
+  frontend:
+    external: false
+  backend:
+    external: false

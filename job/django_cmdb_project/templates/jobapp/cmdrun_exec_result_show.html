@@ -1,0 +1,130 @@
+{% extends 'jobapp/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+    JobExecuteResult
+{% endblock %}
+
+{% block main_block %}
+<div id="show"></div>
+
+<div class="table-responsive">
+	<table class="table table-striped table-condensed table-border">
+	    <tbody>
+		<tr>
+			<td id="jid" val="{{ jid }}">
+			[ JID: {{ jid }} ]
+            {% if is_test %}
+            <font color="red"><strong>[ 测试 ]</strong></font>
+            {% endif %}
+			</td>
+		</tr>
+		</tbody>
+	</table>
+</div>
+
+<div>
+    			[ 
+			目标主机数: <span class="badge badge-pill badge-primary"> <font id="target_hosts_num" val="{{ target_hosts_num }}" data-toggle="tooltip" title="" data-original-title="
+所有执行job任务的主机.">{{target_hosts_num}}</font></span> , 
+			已返回主机数: <span class="badge badge-pill badge-primary"><font data-toggle="tooltip" title="" data-original-title="
+已返回数据的主机，包括成功和失败的." id="return_hosts_num">0</font></span> , 
+			未返回主机数: <span class="badge badge-pill badge-primary"><font data-toggle="tooltip" title="" data-original-title="
+未返回数据的主机，是正在运行的主机，如长时间未返回，minion可能未启动或和master断开."  id="no_return_hosts_num">{{target_hosts_num}}</font></span>
+			]
+</div>
+
+<p id="target_hosts" val="{{target_hosts}}"></p>
+
+<div id="result" style="height:950px;#c3c3c3;background-color:black;color:white;overflow-y:auto;border-radius: 8px;margin-top:15px;font-family:Microsoft YaHei;font-size:20px;">
+<pre style="margin-top:15px;margin-left:10px;margin-bottom:0px;"><font color="white">[root@salt-master ~]#</font></pre>
+</div>
+
+
+
+<script type="text/javascript">
+
+		function IntervalCheck(){
+
+			var jid = $("td#jid").attr("val")
+			
+            var hosts =  $("#target_hosts").attr("val")
+
+           
+			if (hosts == "") {
+				clearInterval(IntChkObj)
+			} else {
+				
+                var hosts_array = hosts.split(",")
+                var update_hosts_array = hosts.split(",")
+                $.ajaxSettings.async = false;
+
+                for (i in hosts_array) {
+                     host = hosts_array[i]
+          
+                     $.post('/jobapp/get_job_host_task_info/',{host:host,jid:jid},function(data){
+                     	
+                     	 if (data != "") {
+	                         DataArray = eval(data)
+	                         ret = DataArray[0]["info"]
+	                         retcode = ret["retcode"]
+	                         retdata = ret["return"]
+                             if (retcode == 0) {
+                             	
+                             	$("#result").html(function(n,origHtml){
+                             		p1 = '<pre style="margin-top:15px;margin-left:5px;margin-bottom:0px;"><font color="green">'+host+':</font></pre>'
+                             		p2 = '<pre style="margin-left:40px;margin-bottom:0px;"><font color="white">'+retdata+'</font></pre>'
+                             		return origHtml+p1+p2
+                             	})
+                             } else {
+                             	$("#result").html(function(n,origHtml){
+                             		p1 = '<pre style="margin-top:15px;margin-left:5px;margin-bottom:0px;"><font color="red">'+host+':</font></pre>'
+                             		p2 = '<pre style="margin-left:40px;margin-bottom:0px;"><font color="white">'+retdata+'</font></pre>'
+                             		return origHtml+p1+p2
+                             	})
+                             }
+
+                             update_hosts_array.splice(jQuery.inArray(host,update_hosts_array),1);
+
+                             return_hosts_num = $('#return_hosts_num').text()
+                             return_hosts_num = new Number(return_hosts_num)
+                             return_hosts_num = return_hosts_num + 1
+                             $('#return_hosts_num').text(return_hosts_num)
+
+                             no_return_hosts_num = $('#no_return_hosts_num').text()
+                             no_return_hosts_num = new Number(no_return_hosts_num)
+                             no_return_hosts_num = no_return_hosts_num - 1
+                             $('#no_return_hosts_num').text(no_return_hosts_num)
+                               
+                         }
+
+                     },
+                     "json"
+                     );
+                }
+                $.ajaxSettings.async = true;
+                
+                tmp = ""
+                for (i in update_hosts_array) {
+                tmp = tmp + update_hosts_array[i] + ","
+                }
+
+                tmp = tmp.substring(0,tmp.length-1)
+
+                $("#target_hosts").attr("val",tmp)
+
+
+			}
+		}
+
+    
+
+	$(document).ready(function(){
+    
+		IntChkObj=setInterval("IntervalCheck()",1000)
+
+	})
+
+</script>
+
+{% endblock %}

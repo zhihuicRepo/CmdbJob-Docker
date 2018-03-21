@@ -1,0 +1,28 @@
+{% if host_detail_info %}
+<table class="table table-striped table-condensed table-border">
+           <tr>
+               <td>主机名:</td>
+               <td>{{ host_detail_info.host }}</td>
+           </tr>
+           <tr>
+               <td>IP地址:</td>
+               <td>{{ host_detail_info.ip_salt }}</td>
+           </tr>
+           <tr>
+               <td>操作系统:</td>
+               <td>{{ host_detail_info.osname_salt }}</td>
+           </tr>
+           <tr>
+               <td>主机类型:</td>
+               <td>{{ host_detail_info.virtual }}</td>
+           </tr>
+           <tr>
+               <td>内存:</td>
+               <td>{{ host_detail_info.mem_total }} MB</td>
+           </tr>
+           <tr>
+               <td>CPU:</td>
+               <td>{{ host_detail_info.cpu_model }}</td>
+           </tr>
+</table>
+{% endif %}

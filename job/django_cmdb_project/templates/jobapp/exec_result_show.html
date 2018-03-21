@@ -1,0 +1,194 @@
+{% extends 'jobapp/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+    JobExecuteResult
+{% endblock %}
+
+{% block main_block %}
+<div id="show"></div>
+
+<div class="table-responsive">
+	<table class="table table-striped table-condensed table-border">
+	    <tbody>
+		<tr>
+			<td id="jid" val="{{ jid }}">
+			[ JID: {{ jid }} ]
+            {% if is_test %}
+            <font color="red"><strong>[ 测试 ]</strong></font>
+            {% endif %}
+			</td>
+		</tr>
+		</tbody>
+	</table>
+</div>
+
+<div>
+    			[ 
+			目标主机数: <span class="badge badge-pill badge-primary"> <font id="target_hosts_num" val="{{ target_hosts_num }}" data-toggle="tooltip" title="" data-original-title="
+所有执行job任务的主机.">{{target_hosts_num}}</font></span> , 
+			已返回主机数: <span class="badge badge-pill badge-primary"><font data-toggle="tooltip" title="" data-original-title="
+已返回数据的主机，包括成功和失败的." id="return_hosts_num">0</font></span> , 
+			未返回主机数: <span class="badge badge-pill badge-primary"><font data-toggle="tooltip" title="" data-original-title="
+未返回数据的主机，是正在运行的主机，如长时间未返回，minion可能未启动或和master断开."  id="no_return_hosts_num">{{target_hosts_num}}</font></span>
+			]
+</div>
+
+<div class="table-responsive" style="margin-top:15px;">
+	<table class="table table-striped table-condensed table-border">
+		<thead>
+			<tr>
+				<td>序号</td>
+				<td>主机名</td>
+				<td>状态</td>
+				<td>详情</td>
+			</tr>
+		</thead>
+		<tbody>
+		{% for host in target_hosts_list %}
+			<tr>
+				<td>{{ forloop.counter }}</td>
+				<td>{{ host }}</td>
+				<td id="check" val="{{ host }}"><img src="{% static 'images/loading1.gif'%}"></td>
+				<td>
+					<a class="btn btn-outline-success my-2 my-sm-0 disabled"  role="button" id="{{host}}" val="{{jid}}|{{host}}" name="job_host_task_detail_btn" href="#job_host_task_detail_info" data-toggle="modal">Detail</a>
+				</td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+</div>
+
+
+
+<!-- popup box start -->
+    <div class="modal fade" id="job_host_task_detail_info" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog modal-lg" style="height:850px; overflow:scroll;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title" id="myModalLabel1">执行结果</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          </div>
+          <div class="modal-body" >
+          	<pre id="result">
+          	</pre>
+          </div>
+          <div class="modal-footer">
+          </div>
+        </div>
+      </div>
+   </div>
+<!-- popup box end   --> 
+
+
+<style>
+    pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+    .string { color: green; }
+    .number { color: darkorange; }
+    .boolean { color: blue; }
+    .null { color: magenta; }
+    .key { color: red; }
+</style>
+
+
+<script type="text/javascript">
+
+		function IntervalCheck(jid){
+
+			var jid = $("td#jid").attr("val")
+			var hosts = ""
+
+			$("td#check").each(function(){
+				host = $(this).attr("val")
+				hosts = hosts + host + ","
+
+			})
+
+           
+			if (hosts == "") {
+				//alert("no host le ")
+				clearInterval(IntChkObj)
+			} else {
+                hosts = hosts.substr(0,hosts.length-1)
+                $.post('/jobapp/get_job_hosts_task_status/',{hosts:hosts,jid:jid},function(data,status){
+                	if (data != "") {
+                	    DataArray = eval(data)
+                	    for (i in DataArray) {
+                		   //$('#show').html(DataArray[i]['host'] + "," + DataArray[i]['status'])
+                		   host = DataArray[i]['host']
+                		   status = DataArray[i]['status']
+
+                		   if (status == 0) {
+                		   	  $('td[val="'+host+'"]').html("<font color='green'><strong>SUCCESS</strong></font>")
+                		   } else {
+                		   	  $('td[val="'+host+'"]').html("<font color='red'><strong>FAILURE</strong></font>")
+                		   }
+                		   $('td[val="'+host+'"]').removeAttr("id")
+                		   $("#"+host).removeClass("disabled")
+                	    }
+                        
+                        target_hosts_num = $("font#target_hosts_num").attr("val")
+                        target_hosts_num = new Number(target_hosts_num)
+                        no_return_hosts_num = 0
+                        $("td#check").each(function(){
+                        	no_return_hosts_num = no_return_hosts_num + 1
+                        })
+                        return_hosts_num = target_hosts_num - no_return_hosts_num
+
+                        $('#return_hosts_num').text(return_hosts_num)
+                        $('#no_return_hosts_num').text(no_return_hosts_num)
+
+
+                	}
+
+                },
+                "json"
+                );
+			}
+		}
+
+    
+    //--------------------------------
+    function syntaxHighlight(json) {
+	    if (typeof json != 'string') {
+	        json = JSON.stringify(json, undefined, 2);
+	    }
+	    json = json.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>');
+	    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function(match) {
+	        var cls = 'number';
+	        if (/^"/.test(match)) {
+	            if (/:$/.test(match)) {
+	                cls = 'key';
+	            } else {
+	                cls = 'string';
+	            }
+	        } else if (/true|false/.test(match)) {
+	            cls = 'boolean';
+	        } else if (/null/.test(match)) {
+	            cls = 'null';
+	        }
+	        return '<span class="' + cls + '">' + match + '</span>';
+	    });
+    }
+    //--------------------------------
+
+
+	$(document).ready(function(){
+    
+		IntChkObj=setInterval("IntervalCheck()",1000)
+
+		$('[name="job_host_task_detail_btn"]').click(function(){
+			ArgsArray = $(this).attr("val").split("|")
+			jid = ArgsArray[0]
+			host = ArgsArray[1]
+			$.getJSON('/jobapp/get_job_host_task_info/',{host:host,jid:jid},function(data){
+                DataArray = eval(data)
+                //alert(DataArray[0]["info"])
+                $('#result').html(syntaxHighlight(DataArray[0]["info"]));
+            })
+		})
+	})
+
+</script>
+
+{% endblock %}

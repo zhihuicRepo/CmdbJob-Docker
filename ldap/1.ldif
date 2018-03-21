@@ -1,0 +1,3 @@
+dn: ou=Group,dc=example,dc=org
+objectClass: organizationalUnit
+ou: Group

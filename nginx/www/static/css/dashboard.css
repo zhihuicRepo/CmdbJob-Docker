@@ -1,0 +1,30 @@
+body {
+	padding-top: 50px;
+}
+h1 {
+	padding-bottom: 9px; margin-bottom: 20px; border-bottom-color: rgb(238, 238, 238); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.sidebar {
+	padding: 20px; left: 0px; top: 51px; bottom: 0px; border-right-color: rgb(238, 238, 238); border-right-width: 1px; border-right-style: solid; position: fixed; z-index: 1000; -ms-overflow-x: hidden; -ms-overflow-y: auto;
+}
+.sidebar {
+	padding-right: 0px; padding-left: 0px;
+}
+.sidebar .nav {
+	margin-bottom: 20px;
+}
+.sidebar .nav-item {
+	width: 100%;
+}
+.sidebar .nav-item + .nav-item {
+	margin-left: 0px;
+}
+.sidebar .nav-link {
+	border-radius: 0px;
+}
+.placeholders {
+	padding-bottom: 3rem;
+}
+.placeholder img {
+	padding-top: 1.5rem; padding-bottom: 1.5rem;
+}

@@ -1,0 +1,30 @@
+{% if failure_task_record %}
+
+<table class="table table-striped table-condensed table-border">
+           <tr>
+               <td>JID:</td>
+               <td>{{ failure_task_record.jid }}</td>
+           </tr>
+           <tr>
+               <td>目标:</td>
+               <td>{{ failure_task_record.id }}</td>
+           </tr>
+           <tr>
+               <td>函数:</td>
+               <td>{{ failure_task_record.fun }}</td>
+           </tr>
+           <tr>
+               <td>参数:</td>
+               <td>{{ failure_task_record.fun_args }}</td>
+           </tr>
+           <tr>
+               <td>返回代码:</td>
+               <td>{{ failure_task_record.retcode }}</td>
+           </tr>
+           <tr>
+               <td>返回数据:</td>
+               <td>{{ failure_task_record.return }}</td>
+           </tr>
+</table>
+
+{% endif %}

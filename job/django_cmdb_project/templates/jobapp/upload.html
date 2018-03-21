@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+<head>
+    <title></title>
+<!-- Bootstrap core CSS -->
+    <link href="{% static 'css/bootstrap.min.css'%}" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/dashboard.css'%}" rel="stylesheet">
+
+    <!-- for kendoui -->
+
+    <script src="{% static 'kendoui/js/jquery.min.js' %}"></script> 
+    <link rel="stylesheet" href="{% static 'kendoui/styles/kendo.common.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'kendoui/styles/kendo.default.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'kendoui/styles/kendo.default.mobile.min.css' %}" />
+    <script src="{% static 'kendoui/js/kendo.core.min.js' %}"></script>
+    <script src="{% static 'kendoui/js/kendo.ui.core.min.js' %}"></script>
+    <script src="{% static 'kendoui/js/kendo.upload.min.js' %}"></script>l
+</head>
+<body>
+
+        <div id="example">
+            <div class="box">
+                <h4>Information</h4>
+                <p>
+                    {{user}}
+                    The Upload is able to upload files out-of-band using the
+                    HTML5 File API with fallback for legacy browsers.
+                </p>
+                <p>
+                    You need to configure save action that will receive
+                    the uploaded files.
+                    An optional remove action is also available.
+                </p>
+            </div>
+
+            <div>
+                <div class="demo-section k-content">
+                    
+                    
+                    <input name="files" id="files" type="file" />
+                    
+                </div>
+            </div>
+
+            <script>
+                function onComplete(e) {
+                    alert("complete")
+                }
+                function onSuccess(e) {
+                    alert("success")
+                }
+
+                $(document).ready(function() {
+                    $("#files").kendoUpload({
+                        async: {
+                            saveUrl: "/jobapp/upload/",
+                            //removeUrl: "remove",
+                            autoUpload: false
+                        },
+                        complete: onComplete,
+                        success: onSuccess
+                    });
+                });
+            </script>
+        </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{% static 'js/tether.min.js' %}"></script>
+    <!-- <script src="{% static 'js/jquery.min.js' %}"></script> -->
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/jobapp.js' %}"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="{% static 'js/ie10-viewport-bug-workaround.js' %}"></script>
+    <script>
+      $(function () { $("[data-toggle='tooltip']").tooltip(); });
+    </script>
+</body>
+</html>

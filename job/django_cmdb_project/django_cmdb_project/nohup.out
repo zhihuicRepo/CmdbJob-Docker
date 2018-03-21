@@ -1,0 +1,126 @@
+
+Error: class uri 'gevent' invalid or not found: 
+
+[Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/gunicorn/util.py", line 134, in load_class
+    mod = import_module('.'.join(components))
+  File "/usr/lib64/python2.7/importlib/__init__.py", line 37, in import_module
+    __import__(name)
+  File "/usr/lib/python2.7/site-packages/gunicorn/workers/ggevent.py", line 22, in <module>
+    raise RuntimeError("You need gevent installed to use this worker.")
+RuntimeError: You need gevent installed to use this worker.
+]
+
+
+Error: class uri 'gevent' invalid or not found: 
+
+[Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/gunicorn/util.py", line 134, in load_class
+    mod = import_module('.'.join(components))
+  File "/usr/lib64/python2.7/importlib/__init__.py", line 37, in import_module
+    __import__(name)
+  File "/usr/lib/python2.7/site-packages/gunicorn/workers/ggevent.py", line 22, in <module>
+    raise RuntimeError("You need gevent installed to use this worker.")
+RuntimeError: You need gevent installed to use this worker.
+]
+
+[2017-06-12 17:52:35 +0000] [14366] [INFO] Starting gunicorn 19.7.1
+[2017-06-12 17:52:35 +0000] [14366] [INFO] Listening at: http://127.0.0.1:8000 (14366)
+[2017-06-12 17:52:35 +0000] [14366] [INFO] Using worker: gevent
+[2017-06-12 17:52:35 +0000] [14371] [INFO] Booting worker with pid: 14371
+[2017-06-12 17:52:35 +0000] [14371] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/gunicorn/arbiter.py", line 578, in spawn_worker
+    worker.init_process()
+  File "/usr/lib/python2.7/site-packages/gunicorn/workers/ggevent.py", line 190, in init_process
+    super(GeventWorker, self).init_process()
+  File "/usr/lib/python2.7/site-packages/gunicorn/workers/base.py", line 126, in init_process
+    self.load_wsgi()
+  File "/usr/lib/python2.7/site-packages/gunicorn/workers/base.py", line 135, in load_wsgi
+    self.wsgi = self.app.wsgi()
+  File "/usr/lib/python2.7/site-packages/gunicorn/app/base.py", line 67, in wsgi
+    self.callable = self.load()
+  File "/usr/lib/python2.7/site-packages/gunicorn/app/wsgiapp.py", line 65, in load
+    return self.load_wsgiapp()
+  File "/usr/lib/python2.7/site-packages/gunicorn/app/wsgiapp.py", line 52, in load_wsgiapp
+    return util.import_app(self.app_uri)
+  File "/usr/lib/python2.7/site-packages/gunicorn/util.py", line 352, in import_app
+    __import__(module)
+  File "/usr/lib64/python2.7/site-packages/gevent/builtins.py", line 93, in __import__
+    result = _import(*args, **kwargs)
+ImportError: No module named django_cmdb_project.wsgi
+[2017-06-12 17:52:35 +0000] [14371] [INFO] Worker exiting (pid: 14371)
+[2017-06-12 17:52:35 +0000] [14366] [INFO] Shutting down: Master
+[2017-06-12 17:52:35 +0000] [14366] [INFO] Reason: Worker failed to boot.
+[2017-06-12 17:53:46 +0000] [14431] [INFO] Starting gunicorn 19.7.1
+[2017-06-12 17:53:46 +0000] [14431] [INFO] Listening at: http://127.0.0.1:8000 (14431)
+[2017-06-12 17:53:46 +0000] [14431] [INFO] Using worker: gevent
+[2017-06-12 17:53:46 +0000] [14436] [INFO] Booting worker with pid: 14436
+[2017-06-12 17:53:46 +0000] [14436] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/gunicorn/arbiter.py", line 578, in spawn_worker
+    worker.init_process()
+  File "/usr/lib/python2.7/site-packages/gunicorn/workers/ggevent.py", line 190, in init_process
+    super(GeventWorker, self).init_process()
+  File "/usr/lib/python2.7/site-packages/gunicorn/workers/base.py", line 126, in init_process
+    self.load_wsgi()
+  File "/usr/lib/python2.7/site-packages/gunicorn/workers/base.py", line 135, in load_wsgi
+    self.wsgi = self.app.wsgi()
+  File "/usr/lib/python2.7/site-packages/gunicorn/app/base.py", line 67, in wsgi
+    self.callable = self.load()
+  File "/usr/lib/python2.7/site-packages/gunicorn/app/wsgiapp.py", line 65, in load
+    return self.load_wsgiapp()
+  File "/usr/lib/python2.7/site-packages/gunicorn/app/wsgiapp.py", line 52, in load_wsgiapp
+    return util.import_app(self.app_uri)
+  File "/usr/lib/python2.7/site-packages/gunicorn/util.py", line 352, in import_app
+    __import__(module)
+  File "/usr/lib64/python2.7/site-packages/gevent/builtins.py", line 93, in __import__
+    result = _import(*args, **kwargs)
+ImportError: No module named django_cmdb_project.wsgi
+[2017-06-12 17:53:46 +0000] [14436] [INFO] Worker exiting (pid: 14436)
+[2017-06-12 17:53:46 +0000] [14431] [INFO] Shutting down: Master
+[2017-06-12 17:53:46 +0000] [14431] [INFO] Reason: Worker failed to boot.
+[2017-06-12 18:07:17 +0000] [15369] [INFO] Starting gunicorn 19.7.1
+[2017-06-12 18:07:17 +0000] [15369] [INFO] Listening at: http://127.0.0.1:8000 (15369)
+[2017-06-12 18:07:17 +0000] [15369] [INFO] Using worker: gevent
+[2017-06-12 18:07:17 +0000] [15374] [INFO] Booting worker with pid: 15374
+[2017-06-12 18:07:17 +0000] [15374] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/gunicorn/arbiter.py", line 578, in spawn_worker
+    worker.init_process()
+  File "/usr/lib/python2.7/site-packages/gunicorn/workers/ggevent.py", line 190, in init_process
+    super(GeventWorker, self).init_process()
+  File "/usr/lib/python2.7/site-packages/gunicorn/workers/base.py", line 126, in init_process
+    self.load_wsgi()
+  File "/usr/lib/python2.7/site-packages/gunicorn/workers/base.py", line 135, in load_wsgi
+    self.wsgi = self.app.wsgi()
+  File "/usr/lib/python2.7/site-packages/gunicorn/app/base.py", line 67, in wsgi
+    self.callable = self.load()
+  File "/usr/lib/python2.7/site-packages/gunicorn/app/wsgiapp.py", line 65, in load
+    return self.load_wsgiapp()
+  File "/usr/lib/python2.7/site-packages/gunicorn/app/wsgiapp.py", line 52, in load_wsgiapp
+    return util.import_app(self.app_uri)
+  File "/usr/lib/python2.7/site-packages/gunicorn/util.py", line 352, in import_app
+    __import__(module)
+  File "/usr/lib64/python2.7/site-packages/gevent/builtins.py", line 93, in __import__
+    result = _import(*args, **kwargs)
+  File "/data/bkv2.0.1/job/django_cmdb_project/django_cmdb_project/wsgi.py", line 16, in <module>
+    application = get_wsgi_application()
+  File "/usr/lib64/python2.7/site-packages/django/core/wsgi.py", line 13, in get_wsgi_application
+    django.setup(set_prefix=False)
+  File "/usr/lib64/python2.7/site-packages/django/__init__.py", line 22, in setup
+    configure_logging(settings.LOGGING_CONFIG, settings.LOGGING)
+  File "/usr/lib64/python2.7/site-packages/django/conf/__init__.py", line 53, in __getattr__
+    self._setup(name)
+  File "/usr/lib64/python2.7/site-packages/django/conf/__init__.py", line 41, in _setup
+    self._wrapped = Settings(settings_module)
+  File "/usr/lib64/python2.7/site-packages/django/conf/__init__.py", line 97, in __init__
+    mod = importlib.import_module(self.SETTINGS_MODULE)
+  File "/usr/lib64/python2.7/importlib/__init__.py", line 37, in import_module
+    __import__(name)
+  File "/usr/lib64/python2.7/site-packages/gevent/builtins.py", line 93, in __import__
+    result = _import(*args, **kwargs)
+ImportError: No module named django_cmdb_project.settings
+[2017-06-12 18:07:17 +0000] [15374] [INFO] Worker exiting (pid: 15374)
+[2017-06-12 18:07:17 +0000] [15369] [INFO] Shutting down: Master
+[2017-06-12 18:07:17 +0000] [15369] [INFO] Reason: Worker failed to boot.

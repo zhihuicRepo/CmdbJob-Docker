@@ -1,0 +1,144 @@
+{% extends 'jobapp/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+    Create Script
+{% endblock %}
+
+{% block extrahead_block %}
+   <script src="{% static 'codemirror-5.14.2/lib/codemirror.js' %}"></script>
+   <script src="{% static 'codemirror-5.14.2/mode/shell/shell.js' %}"></script>
+   <script src="{% static 'codemirror-5.14.2/mode/python/python.js' %}"></script>
+   <script src="{% static 'codemirror-5.14.2/addon/display/fullscreen.js' %}"></script>
+
+   <link rel="stylesheet" href="{% static 'codemirror-5.14.2/lib/codemirror.css' %}" />
+   <link rel="stylesheet" href="{% static 'codemirror-5.14.2/theme/erlang-dark.css' %}" />
+   <link rel="stylesheet" href="{% static 'codemirror-5.14.2/addon/display/fullscreen.css' %}" />
+{% endblock %}
+
+{% block main_block%}
+   
+    <div style="margin-top:6px;">
+        <!-- <h6 style="color: rgb(0, 132, 228)">Custom Scripts</h6> -->
+        
+         <form method="post" action="{% url 'jobapp:save_custom_script' %}">
+            {% csrf_token %}
+                <button type="submit" class="btn btn-primary" id="script_save_btn" name="script_save_btn">保存脚本</button>
+                <a  type="button" class="btn btn-primary" href="{% url 'jobapp:show_custom_script' 1 %}">返回</a>
+                <table class="table table-striped table-condensed table-border" style="margin-top:15px;">
+                    <tr>
+                        <td>脚本名称:</td>
+                        {% if script_name %}
+                            <td>
+                                <input class="form-control" type="text" name="script_name" style="width: 300px" value="{{script_name}}" readonly>
+                                <input type="hidden" name="script_id" value="{{script_id}}">
+                            </td>
+                        {% else %}
+                            <td><input class="form-control" type="text" name="script_name" style="width: 300px"></td>
+                        {% endif %}
+
+                    </tr>
+                    <tr>
+                        <td>脚本参数:</td>
+
+                         <td>
+                          <input class="form-control" type="text" name="script_args" style="width: 300px" {% if script_args %}value="{{script_args}}"{% endif %} placeholder="如: $user $pwd , 起提示说明作用！">
+                        </td>
+                         
+                    </tr>
+                    <tr>
+                        <td>脚本类型:</td>
+                        <td>
+                          <label class="custom-control custom-radio">
+                              {% if script_type == "shell"%}
+                              <input name="script_type" id="script_type_shell" value="shell" type="radio" class="custom-control-input" checked>
+                              {% else %}
+                              <input name="script_type" id="script_type_shell" value="shell" type="radio" class="custom-control-input">
+                              {% endif %}
+                              <span class="custom-control-indicator"></span>
+                              <span class="custom-control-description">Shell</span>
+                            </label>
+                            <label class="custom-control custom-radio">
+                              {% if script_type == "python" %}
+                              <input name="script_type" id="script_type_python" value="python" type="radio" class="custom-control-input" checked>
+                              {% else %}
+                              <input name="script_type" id="script_type_python" value="python" type="radio" class="custom-control-input">
+                              {% endif %}
+                              <span class="custom-control-indicator"></span>
+                              <span class="custom-control-description">Python</span>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+
+                             <div class="row">
+                                 <div class="col">
+                                    <textarea id="editor" name="editor">{% if script_code %}{{script_code}}{% endif %}</textarea>
+                                </div>
+                                 <div class="col">
+                                     <font size="5" color="red" style="font-weight:bold;font-style:italic;">(1) 请在本地测试后再上线执行！</font><br><br>
+                                     <font size="5" color="red" style="font-weight:bold;font-style:italic;">(2) 危险指令请慎用！</font>
+                                 </div>
+                             </div>
+
+                           
+                        </td>
+                    </tr>
+                </table>
+        </form>
+    </div>
+
+
+    <div class="modal fade" id="show_info" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title" id="myModalLabel1">提示</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          </div>
+          <div class="modal-body">
+              请填写'脚本名称','脚本类型','脚本代码'！
+          </div>
+          <div class="modal-footer">
+          </div>
+        </div>
+      </div>
+     </div>
+
+   
+    <script type="text/javascript">
+
+        function init_code_editor(editor_id) {
+            var myTextarea = document.getElementById(editor_id);
+            var CodeMirrorEditor = CodeMirror.fromTextArea(myTextarea, {
+                mode: "text/javascript",
+                lineNumbers:true,
+                theme:"erlang-dark"
+            });
+            return CodeMirrorEditor
+        }
+
+        $(document).ready(function(){
+            
+           CodeMirrorEditor = init_code_editor("editor")    
+           
+           $("#script_save_btn").click(function(){
+               script_name = $('input[name="script_name"]').val()
+               script_type = $('input[name="script_type"]').filter(":checked").val()
+               script_code = CodeMirrorEditor.getValue().replace(/[\r\n]/g,"")
+               if (script_name == "" || script_type == null || script_code == "") {
+                  $("#show_info").modal('show')
+                  return false
+               }
+           })
+
+        })
+    </script>
+
+    <style type="text/css">
+        .CodeMirror{border:1px solid black;font-size:20px;width:1700px;height:830px}
+    </style>
+
+{% endblock %}
+

@@ -1,0 +1,11 @@
+dn: uid=rda,ou=People,dc=example,dc=org
+objectClass: account
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: rda
+gidNumber: 3004
+homeDirectory: /tmp/op/rda
+uid: rda
+uidNumber: 20999
+loginShell: /bin/bash
+userPassword:: e1NTSEF9WHRMc1VsL3YxQTJwY1VxOGJxbTNpb1BZemg3U2FGbnI=

@@ -1,0 +1,4 @@
+dn: cn=appteam,ou=Group,dc=example,dc=org
+objectClass: posixGroup
+cn: appteam
+gidNumber: 3003

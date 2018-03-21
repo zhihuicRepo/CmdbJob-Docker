@@ -1,0 +1,111 @@
+{% extends 'jobapp/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+    Index
+{% endblock %}
+
+{% block main_block%}
+   
+    <div style="margin-top:15px;"><h6 style="color: rgb(0, 132, 228)">Success Tasks (Last {{last_days}} Days)</h6></div>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <td>ID</td>
+                    <td>JID</td>
+                    <td>TIME</td>
+                    <td>TARGET</td>
+                    <td>FUN</td>
+                    <td>Arguments</td>
+                    <td>DETAIL</td>
+                </tr>
+            </thead>
+            <tbody>
+
+            {% for item in recent_succss_tasks_info %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.1 }}</td>
+                    <td>{{ item.3 }}</td>
+                    <td>{{ item.2 }}</td>
+                    <td>{{ item.0 }}</td>
+                    <td>See Detail</td>
+                    <td>
+                        <a class="btn btn-outline-success my-2 my-sm-0"  role="button" id="{{ item.1 }}_{{ item.2 }}" name="failure_task_detail_btn" href="#failure_task_detail_info" data-toggle="modal">Detail</a>
+                    </td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+    
+    <h6 style="color: rgb(0, 132, 228)">Failure Tasks (Last {{last_days}} Days)</h6>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <td>ID</td>
+                    <td>JID</td>
+                    <td>TIME</td>
+                    <td>TARGET</td>
+                    <td>FUN</td>
+                    <td>Arguments</td>
+                    <td>DETAIL</td>
+                </tr>
+            </thead>
+            <tbody>
+
+            {% for item in recent_failure_tasks_info %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.1 }}</td>
+                    <td>{{ item.3 }}</td>
+                    <td>{{ item.2 }}</td>
+                    <td>{{ item.0 }}</td>
+                    <td>See Detail</td>
+                    <td>
+                        <a class="btn btn-outline-success my-2 my-sm-0"  role="button" id="{{ item.1 }}_{{ item.2 }}" name="failure_task_detail_btn" href="#failure_task_detail_info" data-toggle="modal">Detail</a>
+                    </td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+
+
+<!-- popup box start -->
+    <div class="modal fade" id="failure_task_detail_info" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title" id="myModalLabel1"></h6>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          </div>
+          <div class="modal-body" id="ShowFailTaskDetailInfoDiv">
+          </div>
+          <div class="modal-footer">
+          </div>
+        </div>
+      </div>
+   </div>
+<!-- popup box end   --> 
+
+
+<script type="text/javascript">
+    $(document).ready(function(){
+    $('[name="failure_task_detail_btn"]').click(function() {
+        var ArgsArray = $(this).attr("id").split("_")
+        jid = ArgsArray[0]
+        hostname = ArgsArray[1]
+        $.get('/jobapp/get_failure_task_detail_info/',{hostname:hostname,jid:jid},function(data){
+          $('#ShowFailTaskDetailInfoDiv').html(data)
+        })
+      })
+    })
+</script>
+
+{% endblock %}
+

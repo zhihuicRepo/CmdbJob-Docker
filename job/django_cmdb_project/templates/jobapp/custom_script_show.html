@@ -1,0 +1,135 @@
+{% extends 'jobapp/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+    CustomScript
+{% endblock %}
+
+{% block extrahead_block %}
+   <script src="{% static 'codemirror-5.14.2/lib/codemirror.js' %}"></script>
+   <script src="{% static 'codemirror-5.14.2/mode/shell/shell.js' %}"></script>
+   <script src="{% static 'codemirror-5.14.2/mode/python/python.js' %}"></script>
+   <script src="{% static 'codemirror-5.14.2/addon/display/fullscreen.js' %}"></script>
+
+   <link rel="stylesheet" href="{% static 'codemirror-5.14.2/lib/codemirror.css' %}" />
+   <link rel="stylesheet" href="{% static 'codemirror-5.14.2/theme/erlang-dark.css' %}" />
+   <link rel="stylesheet" href="{% static 'codemirror-5.14.2/addon/display/fullscreen.css' %}" />
+{% endblock %}
+
+{% block main_block%}
+   
+    <div style="margin-top:6px;">
+        <!-- <h6 style="color: rgb(0, 132, 228)">Custom Scripts</h6> -->
+        <a  type="button" class="btn btn-primary" id="script_create_btn" href="{% url 'jobapp:create_custom_script' %}">创建脚本</a>
+    </div>
+    <div class="table-responsive" style="margin-top:10px;">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <td>ID</td>
+                    <td>ScriptName</td>
+                    <td>Author</td>
+                    <td>Editor</td>
+                    <td>ScriptType</td>
+                    <td>Manage</td>
+                </tr>
+            </thead>
+            <tbody>
+
+            {% for item in scripts %}
+                <tr>
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.script_name }}</td>
+                    <td>{{ item.author }}</td>
+                    <td>{{ item.editor }}</td>
+                    <td>{{ item.script_type }}</td>
+                    <td>
+                        <a class="btn btn-outline-success my-2 my-sm-0"  role="button" val="{{ item.id }}" name="script_edit_btn" href="{% url 'jobapp:edit_custom_script' item.id %}" >编辑</a>
+                        <a class="btn btn-outline-success my-2 my-sm-0"  role="button" val="{{ item.id }}" name="script_delete_btn">删除</a>
+                    </td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <nav>
+        <ul class="pagination justify-content-end">
+            
+            {% if scripts.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="{% url 'jobapp:show_custom_script' scripts.previous_page_number %}">Previous</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">Previous</a>
+                </li>
+            {% endif %}
+
+            {% for i in scripts.paginator.page_range %}
+                {% if i == scripts.number %}
+                    <li class="page-item active">
+                        <a class="page-link" href="{% url 'jobapp:show_custom_script' i %}">{{i}}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="{% url 'jobapp:show_custom_script' i %}">{{i}}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if scripts.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{% url 'jobapp:show_custom_script' scripts.next_page_number %}">Next</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+            {% endif %}
+
+        </ul>
+        </nav>
+    </div>
+
+    <div id="dialog">
+        <input type="hidden" id="script_id">
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            var dialog = $("#dialog");
+            var script_id = ""
+            dialog.kendoDialog({
+                width: "400px",
+                title: "Custom Scripts Manage",
+                closable: true,
+                modal: true,
+                content: "是否确定删除这个脚本?",
+                actions: [
+                   { text: "确认", action: onOK},
+                   { text: "取消"}
+                ]
+            });
+
+            function onOK(e) {
+
+                $.get("{% url 'jobapp:del_custom_script' %}",{id:script_id},function(){
+                     window.location.reload()
+                })
+            }
+ 
+            dialog.data("kendoDialog").close();
+
+            $('a[name="script_delete_btn"]').click(function(){
+                script_id = $(this).attr("val")
+                dialog.data("kendoDialog").open();
+            })
+
+        })
+    </script>
+
+{% endblock %}
+

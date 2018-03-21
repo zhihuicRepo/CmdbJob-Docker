@@ -1,0 +1,40 @@
+INFO - 2018-03-21 19:54:45 --> Config Class Initialized
+INFO - 2018-03-21 19:54:45 --> Hooks Class Initialized
+DEBUG - 2018-03-21 19:54:45 --> UTF-8 Support Enabled
+INFO - 2018-03-21 19:54:45 --> Utf8 Class Initialized
+INFO - 2018-03-21 19:54:45 --> URI Class Initialized
+INFO - 2018-03-21 19:54:45 --> Router Class Initialized
+INFO - 2018-03-21 19:54:45 --> Output Class Initialized
+INFO - 2018-03-21 19:54:45 --> Security Class Initialized
+DEBUG - 2018-03-21 19:54:45 --> Global POST, GET and COOKIE data sanitized
+INFO - 2018-03-21 19:54:45 --> Input Class Initialized
+INFO - 2018-03-21 19:54:45 --> Language Class Initialized
+INFO - 2018-03-21 19:54:45 --> Loader Class Initialized
+DEBUG - 2018-03-21 19:54:45 --> Config file loaded: /var/www/html/bk-cmdb-master/application/config/errorcode.php
+DEBUG - 2018-03-21 19:54:45 --> Session: Initialization under CLI aborted.
+DEBUG - 2018-03-21 19:54:45 --> Session class already loaded. Second attempt ignored.
+DEBUG - 2018-03-21 19:54:45 --> Session class already loaded. Second attempt ignored.
+INFO - 2018-03-21 19:54:45 --> Controller Class Initialized
+INFO - 2018-03-21 19:54:45 --> Database Driver Class Initialized
+INFO - 2018-03-21 19:54:46 --> Final output sent to browser
+DEBUG - 2018-03-21 19:54:46 --> Total execution time: 0.4390
+INFO - 2018-03-21 22:59:07 --> Config Class Initialized
+INFO - 2018-03-21 22:59:07 --> Hooks Class Initialized
+DEBUG - 2018-03-21 22:59:07 --> UTF-8 Support Enabled
+INFO - 2018-03-21 22:59:07 --> Utf8 Class Initialized
+INFO - 2018-03-21 22:59:07 --> URI Class Initialized
+INFO - 2018-03-21 22:59:07 --> Router Class Initialized
+INFO - 2018-03-21 22:59:07 --> Output Class Initialized
+INFO - 2018-03-21 22:59:07 --> Security Class Initialized
+DEBUG - 2018-03-21 22:59:07 --> Global POST, GET and COOKIE data sanitized
+INFO - 2018-03-21 22:59:07 --> Input Class Initialized
+INFO - 2018-03-21 22:59:07 --> Language Class Initialized
+INFO - 2018-03-21 22:59:07 --> Loader Class Initialized
+DEBUG - 2018-03-21 22:59:07 --> Config file loaded: /var/www/html/bk-cmdb-master/application/config/errorcode.php
+DEBUG - 2018-03-21 22:59:07 --> Session: Initialization under CLI aborted.
+DEBUG - 2018-03-21 22:59:07 --> Session class already loaded. Second attempt ignored.
+DEBUG - 2018-03-21 22:59:07 --> Session class already loaded. Second attempt ignored.
+INFO - 2018-03-21 22:59:07 --> Controller Class Initialized
+INFO - 2018-03-21 22:59:07 --> Database Driver Class Initialized
+INFO - 2018-03-21 22:59:07 --> Final output sent to browser
+DEBUG - 2018-03-21 22:59:07 --> Total execution time: 0.6166

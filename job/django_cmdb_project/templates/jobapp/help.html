@@ -1,0 +1,14 @@
+{% extends 'jobapp/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+    Help
+{% endblock %}
+
+{% block main_block %}
+
+<div style="margin-top:15px;">
+<span><div>作业系统是基于蓝鲸cmdb和saltstack的脚本执行, 命令执行, sls执行，文件上传等功能的简易作业系统。</div><div><br/></div><div>如下就基本功能进行简要说明。</div><div><br/></div><div><span style="font-size: 16px;"><b>(1)  命令执行</b></span></div><div><b><span style="font-size: 16px;"><br/></span></b></div><ol><li><b>选取作业目标主机</b>，有三种方式可选取目标主机，分别是&quot;cmdb分组目标选取&quot;,&quot;salt分组目标选取&quot;,&quot;动态分组目标选取&quot;。下面以&quot;动态分组目标选取 &quot;进行主机选择。各分组之间区别，详见&quot;分组说明&quot;</li></ol><div><br/></div><div><img src="{% static 'images/Image.png'%}" type="image/png" style="height: auto;"/></div><div><br/></div><div><br/></div><ol start="2"><li><b>确定选取目标主机</b> ，注意处于&quot;<span style="color: rgb(255, 0, 0);">DOWN</span>&quot;状态的主机是不可选取的。</li></ol><div><br/></div><div><img src="{% static 'images/Image_[1].png'%}" type="image/png" style="height: auto;"/></div><div><br/></div><ol start="3"><li><b>执行结果展示</b></li></ol><div><br/></div><div><img src="{% static 'images/Image_[2].png'%}" type="image/png" style="height: auto;"/></div><div><br/></div><div><br/></div><div><span style="font-size: 16px;"><b>(2) 文件上传</b></span></div><div><b><span style="font-size: 16px;"><br/></span></b></div><ol><li><b>选取作业目标主机</b></li><li><b>确定选取目标主机</b> ，注意处于&quot;<span style="color: rgb(255, 0, 0);">DOWN</span>&quot;状态的主机是不可选取的。</li></ol><div><br/></div><div><img src="{% static 'images/Image_[3].png'%}" type="image/png" style="height: auto;"/></div><div><br/></div><ol start="3"><li><b>上传本地文件到salt-mater</b> , 如你需上传到主机的文件，你先前已上传到salt-master中，则这步略过 ，直接选取后"确认执行"即可。</li></ol><div><br/></div><div><img src="{% static 'images/Image_[4].png'%}" type="image/png" style="height: auto;"/></div><div><br/></div><ol start="4"><li><b>执行结果展示</b></li></ol><div><b><br/></b></div><div><img src="{% static 'images/Image_[5].png'%}" type="image/png" style="height: auto;"/></div><div><b><br/></b></div><div>(3) <span style="font-size: 16px;"><b>sls执行</b></span>，过程同上，不再说明。</div><div><br/></div><div>(4) <span style="font-size: 16px;"><b>分组说明</b></span></div><ol><li><b>cmdb分组目标选取,</b> 数据来自于蓝鲸cmdb,编辑分组信息请前往cmdb.qk.com</li></ol><div><br/></div><div><b>     </b>2<b>. salt分组目标选取,</b> 基于saltstack的主机过滤，过滤规则可在&quot;分组管理&quot;下的&quot;salt分组管理&quot;进行设置。</div><div><br/></div><div><img src="{% static 'images/Image_[6].png'%}" type="image/png" style="height: auto;"/></div><div><br/></div><div><b> </b>3<b>.动态分组目标选取，</b>自定义分组，可在&quot;分组管理&quot;下的&quot;动态分组管理&quot;进行设置。</div><div><br/></div><div><img src="{% static 'images/Image_[7].png'%}" type="image/png" style="height: auto;"/></div><div><br/></div><div><br/></div></span>
+</div>
+
+{% endblock%}

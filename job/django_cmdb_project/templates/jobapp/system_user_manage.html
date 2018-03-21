@@ -1,0 +1,137 @@
+{% extends 'jobapp/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+    CustomScript
+{% endblock %}
+
+
+{% block main_block%}
+   
+    <div style="margin-top:6px;">
+        <!-- <h6 style="color: rgb(0, 132, 228)">Custom users</h6> -->
+        <input id="users_manage" style="width: 200px;" />
+    </div>
+    <div class="table-responsive" style="margin-top:10px;">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <td>ID</td>
+                    <td>UserName</td>
+                    <td>Manage</td>
+                </tr>
+            </thead>
+            <tbody>
+
+            {% for item in users %}
+                <tr>
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.user }}</td>
+                    <td>
+                        <a class="btn btn-outline-success my-2 my-sm-0"  role="button" val="{{ item.id }}" name="user_delete_btn">删除</a>
+                    </td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <nav>
+        <ul class="pagination justify-content-end">
+            
+            {% if users.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="{% url 'jobapp:system_user_manage' users.previous_page_number %}">Previous</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">Previous</a>
+                </li>
+            {% endif %}
+
+            {% for i in users.paginator.page_range %}
+                {% if i == users.number %}
+                    <li class="page-item active">
+                        <a class="page-link" href="{% url 'jobapp:system_user_manage' i %}">{{i}}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="{% url 'jobapp:system_user_manage' i %}">{{i}}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if users.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{% url 'jobapp:system_user_manage' users.next_page_number %}">Next</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+            {% endif %}
+
+        </ul>
+        </nav>
+    </div>
+
+    
+    <div class="modal fade" id="system_user_manage_window" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog">
+        <form method="post" action="{% url 'jobapp:system_user_save' %}">
+        {% csrf_token %}
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title" id="myModalLabel1">系统用户管理</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          </div>
+          <div class="modal-body">
+            <input type="text" class="form-control" id="system_user_name" name="system_user_name">
+            <input id="users" style="width: 400px;" />
+          </div>
+          <div class="modal-footer">
+           <button type="submit" class="btn btn-primary" id="user_save_btn" name="user_save_btn">确认</button>
+          </div>
+        </div>
+        </form>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('a[name="user_edit_btn"]').click(function(){
+                var user_name = $(this).attr("val")
+                $("#system_user_name").val(user_name)
+            })
+            $('a[name="user_delete_btn"]').click(function(){
+                var user_id = $(this).attr("val")
+                $.get("{% url 'jobapp:system_user_del' %}",{id:user_id},function(data) { 
+                    window.location.reload()
+                })
+            })
+            $("#user_save_btn").click(function(){
+                var val = $("#system_user_name").val()
+                if (val == "") {
+                    $("#system_user_name").attr("placeholder","请输入用户名!")
+                    return false
+                }
+            })
+
+            $('#system_user_manage_window').on('shown.bs.modal', function() {
+               $(document).off('focusin.modal');
+            });
+        })
+    </script>
+
+    <script id="noDataTemplate" type="text/x-kendo-tmpl">
+        <div>
+            找不到这个用户，你想添加该用户吗 - '#: instance.filterInput.val() #' ?
+        </div>
+        <br />
+
+        <button class="k-button" onclick="addNew('#: instance.element[0].id #', '#: instance.filterInput.val() #')">add new user</button>
+    </script>
+
+{% endblock %}
+
