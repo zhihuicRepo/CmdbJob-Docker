@@ -3,10 +3,10 @@ A、开发原理介绍：
 1、job:利用salt、Django 进行开发，job依赖salt-minion指向job对应的ip即可；  
 2、cmdb 基于blueking cmdb进行简单开发；  
 3、mysql 提供基础数据服务（初始脚本放置于mysql/init）；  
-4、ldap 用于账户认证(初始数据可放置于ldap目录)；  
-5、nginx用于文件服务器、服务转发和负载均衡；  
-6、redis用于提供单点登录，session保存；  
-7、安装这个服务需要具备docker-compose和docker环境，具体不在详细描述；  
+4、ldap 用于账户认证(初始数据可放置于ldap目录)；    
+5、nginx用于文件服务器、服务转发和负载均衡；   
+6、redis用于提供单点登录，session保存；     
+7、安装这个服务需要具备docker-compose和docker环境，具体不再详细描述；    
 ```bash
 .
 ├── job
