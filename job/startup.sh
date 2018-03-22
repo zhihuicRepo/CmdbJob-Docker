@@ -9,7 +9,7 @@ if [ $status -ne 0 ]; then
 fi
 
 # Start the second process
-nohup python /job/django_cmdb_project/manage.py  runserver 0.0.0.0:8000 &
+nohup python /job/django_cmdb_project/manage.py  runserver 0.0.0.0:8000 > /var/log/job.log 2>&1 &
 status=$?
 if [ $status -ne 0 ]; then
   echo "Failed to start django : $status"
